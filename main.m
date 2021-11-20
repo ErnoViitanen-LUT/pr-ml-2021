@@ -1,5 +1,11 @@
 loadstrokes;
 
-startIndex = 80;
+if ~exist('DEBUG', 'var')
+        DEBUG = false;
+end
 
-plotstrokes(data,class,startIndex);
+startIndex = 80;
+data=datanormalization(data);
+if(DEBUG==true)
+    plotstrokes(data,class,startIndex);
+end

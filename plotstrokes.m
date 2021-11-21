@@ -36,13 +36,21 @@ function draw_plots(data,sampleIndex)
             subplot(4,5,i+1);            
             plot3(sample(:,1), sample(:,2), sample(:,3), 'k-');
             view(360,90); % rotate plot
+            hold on;
+
+            [pos,segments] = plotrects(sample);
             title("3D " + (i*100 + j));
+            hold off;
         end
         for i=0:9 % plot 10 digits in 2D
             sample = cell2mat(data(i*100 + j));
             subplot(4,5,i+10+1);
             plot(sample(:,1), sample(:,2));
-            title("2D " + (i*100 + j));
+            hold on;
+            [pos,segments] = plotrects(sample);
+            
+            title("2D " + (i*100 + j),"start-end: " + pos(1) +":"+ pos(2) + ", intersections: " +length(segments));
+            hold off;
         end  
     end
     drawnow;  
@@ -50,15 +58,86 @@ end
 
 function plot_digit(data,sampleIndex,plotDigit)
     % plot individual digit
-
+    
     cla; % clear subplots
     for j=1:20 % plot 20 digits in 2D
         sample = cell2mat(data(plotDigit*100 + j + sampleIndex));
         subplot(4,5,j);
         plot(sample(:,1), sample(:,2));
-        title("2D " + (plotDigit*100 + j + sampleIndex));
+        hold on;
+        [pos,segments] = plotrects(sample);
+        title("2D " + (plotDigit*100 + j + sampleIndex),"start-end: " + pos(1) +":"+ pos(2) + ", intersections: " +length(segments));
+
+        hold off;
     end
+
     drawnow;    
+end
+
+function [pos,segments] = plotrects(sample)
+
+    numPointsInSample = 3;
+    sampleStart=sample(1:numPointsInSample,:);
+    sampleSize = size(sample,1);
+    sampleEnd = sample(sampleSize - numPointsInSample:sampleSize,:);
+    plot(sampleStart(:,1),sampleStart(:,2),"rx");
+    plot(sampleEnd(:,1),sampleEnd(:,2),"bx");
+    [x0,y0,segments] = selfintersect(sample(:,1),sample(:,2));
+    if(length(segments) > 0)        
+        %segments(segments >= 30 & segments <= sampleSize - 50) = [];
+    end
+    plot(x0,y0,"ro");
+
+    pos = [0,0];
+    for k=1:9
+        if pos(1) == 0
+            pos(1) = plotOneRect(sampleStart(1,:),k,"red");
+        end
+        if pos(2) == 0
+            pos(2) = plotOneRect(sampleEnd(1,:),k,"blue");
+        end
+    end
+    
+end
+
+function foundInPos = plotOneRect(sample,pos,color)
+    foundInPos = 0;
+    if pos == 1 %bottomleft
+        x=[0,1/3,1/3,0];
+        y=[0,0,1/3,1/3];
+    elseif pos == 2 %bottommiddle
+        x=[1/3,2/3,2/3,1/3];
+        y=[0,0,1/3,1/3];
+    elseif pos == 3 %bottomright
+        x=[1-1/3,1,1,1-1/3];
+        y=[0,0,1/3,1/3];
+    elseif pos == 4 %middleleft
+        x=[0,1/3,1/3,0];
+        y=[1/3,1/3,2/3,2/3];
+    elseif pos == 5 %center
+        x=[1/3,2/3,2/3,1/3];
+        y=[1/3,1/3,2/3,2/3];
+    elseif pos == 6 %middleright
+        x=[1-1/3,1,1,1-1/3];
+        y=[1/3,1/3,2/3,2/3];
+    elseif pos == 7 %topleft
+        x=[0,1/3,1/3,0];
+        y=[1-1/3,1-1/3,1,1];
+    elseif pos == 8 %topmiddle
+        x=[1/3,2/3,2/3,1/3];
+        y=[1-1/3,1-1/3,1,1];
+    else %pos == 9 topright
+        x=[1-1/3,1,1,1-1/3];
+        y=[1-1/3,1-1/3,1,1];
+    end
+    in = inpolygon(sample(:,1),sample(:,2),x,y);
+    if any(in)
+        foundInPos = pos;
+        p = patch(x,y,nan,'FaceColor',color,'FaceAlpha',.1);  
+    end
+
+    
+
 end
 
 function btn_click(hObject, event,TextIndex,data,inc,plotDigit) 

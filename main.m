@@ -1,5 +1,5 @@
 loadstrokes;
-
+DEBUG = true;
 if ~exist('DEBUG', 'var')
         DEBUG = false;
 end

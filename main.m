@@ -6,8 +6,8 @@ if ~exist('DEBUG', 'var')
 end
 
 startIndex = 80;
-plotDigit = 1;
+
 data=datanormalization(data);
 if(DEBUG==true)
-    plotstrokes(data,class,startIndex,plotDigit);
+    plotstrokes(data,class,startIndex,2);
 end

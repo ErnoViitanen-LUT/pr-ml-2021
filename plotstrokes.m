@@ -8,17 +8,19 @@ function plotstrokes(data,class,sampleIndex,plotDigit)
    
     hFig = figure;
     hFig.Position = [100 100 1400 800]; % set figure position and size
-    
+
     % Create UI controls and callbacks for changing stroke set
     ButtonPrev = uicontrol('Parent',hFig,'Style','pushbutton','String','Prev','Units','points','Position',[420 20 40 20],'Visible','on');
     TextIndex=uicontrol('Parent',hFig,'Style','text','String',sampleIndex,'Units','points','Position',[460 20 50 20],'Visible','on');
     ButtonNext=uicontrol('Parent',hFig,'Style','pushbutton','String','Next','Units','points','Position',[500 20 50 20],'Visible','on');
-    ButtonNext.Callback = {@btn_click,TextIndex,data,1,plotDigit};
-    ButtonPrev.Callback = {@btn_click,TextIndex,data,-1,plotDigit};
     
     if exist('plotDigit', 'var')
+        ButtonNext.Callback = {@btn_click,TextIndex,data,1,plotDigit};
+        ButtonPrev.Callback = {@btn_click,TextIndex,data,-1,plotDigit};
         plot_digit(data,sampleIndex,plotDigit); % plot individual digit
     else
+        ButtonNext.Callback = {@btn_click,TextIndex,data,1};
+        ButtonPrev.Callback = {@btn_click,TextIndex,data,-1};
         draw_plots(data,sampleIndex); % plot different digits
     end
 end

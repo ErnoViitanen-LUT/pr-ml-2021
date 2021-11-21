@@ -9,5 +9,8 @@ startIndex = 80;
 
 data=datanormalization(data);
 if(DEBUG==true)
-    plotstrokes(data,class,startIndex,2);
+    plotstrokes(data,class,startIndex,3);
+
+
+    %axis([0 1 0 1]);
 end

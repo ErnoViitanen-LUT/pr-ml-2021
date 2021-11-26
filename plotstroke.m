@@ -1,4 +1,4 @@
-function plotstrokes(data)
+function plotstrokes(data,prob)
     % plot strokes starting from sampleIndex
     % plotDigit [optional]: plot alternatively one digit multiple times
     
@@ -11,7 +11,10 @@ function plotstrokes(data)
     plot(sample(:,1), sample(:,2));
     hold on;
     [pos,intersection,segment,interpos] = plotrects(sample);    
-    title("2D","start-end: " + pos(1) +":"+ pos(2) + ", intersections: " + mat2str(interpos));
+    top3 = strcat(mat2str(prob(2,1)),sprintf(': %.3f',(prob(1,1))),", ",...
+        mat2str(prob(2,2)),sprintf(': %.3f',(prob(1,2))),", ",...
+        mat2str(prob(2,3)),sprintf(': %.3f',(prob(1,3))))
+    title("Predicted: " + prob(2,1), top3 + " s/e: " + pos(1) +"/"+ pos(2) + ", i: " + mat2str(interpos));
 
     hold off;
 end

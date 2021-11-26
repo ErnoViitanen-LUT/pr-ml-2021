@@ -13,8 +13,8 @@ simple = simplify(data);
 startProbabilities = getProbabilities(simple,1)
 endProbabilities = getProbabilities(simple,2)
 
-summedStart = startProbabilities ./ sum(startProbabilities)
-summedEnd = endProbabilities ./ sum(endProbabilities)
+summedStart = startProbabilities ./ (sum(startProbabilities) + sum(endProbabilities))
+summedEnd = endProbabilities ./ (sum(endProbabilities) + sum(startProbabilities))
 
 %summedStart = [summedStart; 1:10]
 
@@ -29,7 +29,6 @@ inputPoints = interactive_digit_input;
 inputPoints = datanormalization(inputPoints);
 fprintf("done waiting...")
 simple = simplify(inputPoints);
-plotstroke(inputPoints);
 
 strokeStart = simple(1,:);
 strokeEnd = simple(2,:);
@@ -40,6 +39,9 @@ endProbability = sortByColumn([summedEnd(:,strokeEnd) [0:9]'],1)'
 %endProbability = [summedEnd(:,strokeEnd) [0:9]']'
 
 sumProbability = sortByColumn([summedStart(:,strokeStart) + summedEnd(:,strokeEnd) [0:9]'],1)'
+
+
+plotstroke(inputPoints,sumProbability);
 
 
 
@@ -60,7 +62,7 @@ function weightedProbability(startProb,endProb)
 end
 
 function sorted = sortByColumn(x,col)
-    [~,idx] = sort(x(:,col)); % sort by distance in ascending order
+    [~,idx] = sort(x(:,col),'descend'); % sort by distance in ascending order
     sorted = x(idx,:);   % sort the whole matrix using the sort indices
 end
 
@@ -68,8 +70,8 @@ end
 function probability = getProbabilities(data,row)
     probability = zeros(10,9);
 
-    numRows = size(data,1)
-    numCols = size(data,2)
+    numRows = size(data,1);
+    numCols = size(data,2);
     
     for i=1:numRows
         %probability(i,10) = i-1;

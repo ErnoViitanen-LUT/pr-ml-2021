@@ -5,7 +5,7 @@ function data = datanormalization(data)
     if ~exist('data','var')
         error("No data for normalization found")
     end
-    [M,N]=size(data)
+    [M,N]=size(data);
     data_len = 0;
     if(M==1)
         data_len=N;
@@ -20,7 +20,6 @@ function data = datanormalization(data)
             [m,n]=size(d);
             data(i) = mat2cell(d,m,n); %convert matrix back to cell
         end
-        d
     else
         d = data;
         data = normalize(d,'range');

@@ -1,5 +1,5 @@
 k = 2;
-train_size = 0.8;
+train_size = 0.5;
 
 data_size = size(data,2);
 divided_data = cell(k,k,data_size);

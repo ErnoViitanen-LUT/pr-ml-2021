@@ -1,4 +1,4 @@
-function data = plotstrokes(data)
+function data = datanormalization(data)
     if ~exist('DEBUG', 'var')
         DEBUG = false;
     end

@@ -13,7 +13,7 @@ else
     for file = files'
         i = i+1;
         [mat,tok,ext] = regexp(file.name,"stroke_([0-9])_.*",'match','tokens', 'tokenExtents');
-        class(1,i) = str2num(char(tok{1}));
+        class(1,i) = 1 + str2num(char(tok{1}));
         data(1,i) = struct2cell(load("training_data/" + file.name,"pos"));
     end
     % clear all except class and data variables

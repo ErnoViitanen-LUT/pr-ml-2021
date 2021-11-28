@@ -26,8 +26,8 @@ function [model, C, y_test] = augmented_model(data,class,train_size,dim, seed)
         error("Model works with 2D and 3D data only");
     end
     
-    if(train_size<=0 || train_size>=1)
-        error("Train size must be a value from (0,1>");
+    if(train_size<=0 || train_size>1)
+        error("Train size must be a value from (0,1)");
     end
     
     if(DEBUG==true)
@@ -54,7 +54,7 @@ function [model, C, y_test] = augmented_model(data,class,train_size,dim, seed)
             figure
         end
         for i = 1:N_train
-            x = cell2mat(num_dat(i)); %we convert our data from cell to matrix
+            x = cell2mat(x_train(i)); %we convert our data from cell to matrix
             if(isempty(x))
                 train_data(:,digit*N_train+i)=NaN(1,dim);
                 continue;
@@ -85,7 +85,7 @@ function [model, C, y_test] = augmented_model(data,class,train_size,dim, seed)
             figure
         end
         for i = 1:N_test
-            x = cell2mat(num_dat(N_train+i)); %we convert the cell into matrix
+            x = cell2mat(x_test(i)); %we convert the cell into matrix
             if(isempty(x))
                 test_data(:,digit*N_train+i)=NaN(1,dim);
                 continue;

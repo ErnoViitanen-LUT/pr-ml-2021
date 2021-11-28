@@ -36,17 +36,3 @@ error = sum(y_test ~= test_class); % we compare our results with the expected va
 acc = (test_data_size-error)/(test_data_size) % we compute the accuracy
 confusion = confusionmat(test_class,y_test) %we compute the confusion matrix
 confusionchart(confusion)
-
-% subplot(2,2,3)
-% x = cell2mat(divided(1))
-% plot(x(:,1),x(:,2),'k.')
-% subplot(2,2,4)
-% x = cell2mat(divided(2))
-% plot(x(:,1),x(:,2),'k.')
-% subplot(2,2,1)
-% x = cell2mat(divided(3))
-% plot(x(:,1),x(:,2),'k.')
-% subplot(2,2,2)
-% x = cell2mat(divided(4))
-% plot(x(:,1),x(:,2),'k.')
-

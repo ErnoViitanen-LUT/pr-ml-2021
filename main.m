@@ -27,6 +27,7 @@ end
 
 inputPoints = interactive_digit_input;
 inputPoints = datanormalization(inputPoints);
+%inputPoints = datanormalization(cell2mat(data(404)))
 fprintf("done waiting...")
 simple = simplify(inputPoints);
 

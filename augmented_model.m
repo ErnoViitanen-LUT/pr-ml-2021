@@ -1,6 +1,6 @@
 function [model, C, y_test] = augmented_model(data,class,train_size,dim, seed)
 % AUGMENTEDSTATISTICALMODEL(data, class, train_size, dim, seed)
-    DEBUG=true;
+%     DEBUG=true;
     if ~exist('DEBUG', 'var') %checks if DEBUG variable exists, if not we assume DEBUG = false
         DEBUG = false;
     end
@@ -56,12 +56,12 @@ function [model, C, y_test] = augmented_model(data,class,train_size,dim, seed)
         for i = 1:N_train
             x = cell2mat(num_dat(i)); %we convert our data from cell to matrix
             if(isempty(x))
-                train_data(:,digit*N_train+i)=zeros(1,dim);
+                train_data(:,digit*N_train+i)=NaN(1,dim);
                 continue;
             end
             avg = mean(x(:,1:dim)); % and we compute the mean of our data
-            try(avg(dim))
-            catch ME
+            [avg_m, avg_n] = size(avg);
+            if(avg_n < dim)
                 train_data(:,digit*N_train+i)=x(:,1:dim);
                 continue;
             end
@@ -87,12 +87,12 @@ function [model, C, y_test] = augmented_model(data,class,train_size,dim, seed)
         for i = 1:N_test
             x = cell2mat(num_dat(N_train+i)); %we convert the cell into matrix
             if(isempty(x))
-                test_data(:,digit*N_train+i)=zeros(1,dim);
+                test_data(:,digit*N_train+i)=NaN(1,dim);
                 continue;
             end
             avg = mean(x(:,1:dim)); %once more we compute the mean
-            try(avg(dim))
-            catch ME
+            [avg_m, avg_n] = size(avg);
+            if(avg_n < dim)
                 test_data(:,digit*N_train+i)=x(:,1:dim);
                 continue;
             end
@@ -124,7 +124,12 @@ function [model, C, y_test] = augmented_model(data,class,train_size,dim, seed)
     for j=1:test_data_size
         for k=0:9
             s = strcat("digit_",num2str(k));
-            C(k+1,j) =  mvnpdf(test_data(:,j),model.(s).mu,model.(s).sigma); %we calculate the density function for test data with each model
+%             C(k+1,j) = discriminant_function(test_data(:,j), model.(s).mu,model.(s).sigma)
+            try
+                C(k+1,j) =  mvnpdf(test_data(:,j),model.(s).mu,model.(s).sigma); %we calculate the density function for test data with each model
+            catch ME
+                C(k+1,j) = 0;
+            end
         end
     end
     [~,y_test] = max(C,[],1); %we choose the class which has the biggest value
@@ -139,7 +144,9 @@ function [model, C, y_test] = augmented_model(data,class,train_size,dim, seed)
         for digit = 0:9
             s = strcat("digit_",num2str(digit));
             model.(s).mu = mean(train_data(:,digit*N_train+1:(digit+1)*N_train),2);
-            model.(s).sigma = cov(train_data(:,digit*N_train+1:(digit+1)*N_train)');
+            cov_mat = cov(train_data(:,digit*N_train+1:(digit+1)*N_train)','includenan');
+            cov_mat(cov_mat<0)=0;
+            model.(s).sigma = cov_mat;
         end
     end
 end

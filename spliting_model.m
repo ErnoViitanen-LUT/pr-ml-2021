@@ -1,6 +1,6 @@
-% [model, C, y]=augmented_model(data,class, 0.7,2,seed)
 k = 2;
-train_size = 0.7;
+train_size = 0.8;
+
 data_size = size(data,2);
 divided_data = cell(k,k,data_size);
 train_data_size = round(train_size*data_size);
@@ -12,16 +12,17 @@ y_total = zeros(k^2, test_data_size);
 for i = [1:data_size]
     divided_data(:,:,i) = hyperplane_division(data(i),k);
 end
+rng shuffle
 seed = rng;
 for i = [1:k]
     for j = [1:k]
-        [model, C, y]=augmented_model(divided_data(i,j,:),class, 0.7,2, seed);
+        [model, C, y]=augmented_model(divided_data(i,j,:),class, train_size,2, seed);
         C_total(2*(i-1)+j,:,:) = C; 
         y_total(2*(i-1)+j,:) = y; 
     end
 end
 close all;
-C_sum = sum(C_total);
+C_sum = sum(C_total,1);
 
 [~,y_test] = max(C_sum,[],2); %we choose the class which has the biggest value
 y_test = reshape(y_test,[1,test_data_size]);

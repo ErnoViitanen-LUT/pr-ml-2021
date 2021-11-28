@@ -1,6 +1,6 @@
-function [model, C, y_test] = augmented_model(data,class,train_size,dim, seed)
+function [model, C, y_test, acc] = augmented_model(data,class,train_size,dim, seed)
 % AUGMENTEDSTATISTICALMODEL(data, class, train_size, dim, seed)
-%     DEBUG=true;
+    DEBUG=true;
     if ~exist('DEBUG', 'var') %checks if DEBUG variable exists, if not we assume DEBUG = false
         DEBUG = false;
     end
@@ -31,7 +31,7 @@ function [model, C, y_test] = augmented_model(data,class,train_size,dim, seed)
     end
     
     if(DEBUG==true)
-        close all; % if debug is true, close all figures generated in the previous run
+%         close all; % if debug is true, close all figures generated in the previous run
     end
     
     
@@ -51,7 +51,7 @@ function [model, C, y_test] = augmented_model(data,class,train_size,dim, seed)
         [x_train, x_test, seed]=test_train_split(num_dat,train_size,seed); %we split our data into training and testing
         % Training data %
         if(DEBUG==true)
-            figure
+%             figure
         end
         for i = 1:N_train
             x = cell2mat(x_train(i)); %we convert our data from cell to matrix
@@ -66,25 +66,26 @@ function [model, C, y_test] = augmented_model(data,class,train_size,dim, seed)
                 continue;
             end
             if(DEBUG==true)
-                if(dim==2)
-                    plot(avg(1),avg(2),'k.'); hold on
-                elseif(dim==3)
-                    plot3(avg(1),avg(2),avg(3),'k.'); hold on
-                end
+%                 if(dim==2)
+%                     plot(avg(1),avg(2),'k.'); hold on
+%                 elseif(dim==3)
+%                     plot3(avg(1),avg(2),avg(3),'k.'); hold on
+%                 end
             end
             train_data(:,digit*N_train+i)=avg; % we assign the mean to our training dataset
         end
         if(DEBUG==true)
-            title(strcat(num2str(digit),'\_train'))
-            axis([0,1,0,1]);
+%             title(strcat(num2str(digit),'\_train'))
+%             axis([0,1,0,1]);
 %             saveas(gcf,strcat(num2str(digit),'_train.png')); %uncomment this if you want to save the results as a png file
-            hold off;
+%             hold off;
         end
         % Testing data %
         if(DEBUG==true)
-            figure
+%             figure
         end
         for i = 1:N_test
+            test_class(:,digit*N_test+i) = digit; %we add information about the class
             x = cell2mat(x_test(i)); %we convert the cell into matrix
             if(isempty(x))
                 test_data(:,digit*N_train+i)=NaN(1,dim);
@@ -97,20 +98,20 @@ function [model, C, y_test] = augmented_model(data,class,train_size,dim, seed)
                 continue;
             end
             if(DEBUG==true)
-                if(dim==2)
-                    plot(avg(1),avg(2),'k.'); hold on
-                elseif(dim==3)
-                    plot3(avg(1),avg(2),avg(3),'k.'); hold on
-                end
+%                 if(dim==2)
+%                     plot(avg(1),avg(2),'k.'); hold on
+%                 elseif(dim==3)
+%                     plot3(avg(1),avg(2),avg(3),'k.'); hold on
+%                 end
             end
             test_data(:,digit*N_test+i)=avg; % we assign the mean to the testing data
-            test_class(:,digit*N_test+i) = digit; %we add information about the class
+            
         end
         if(DEBUG==true)
-            title(strcat(num2str(digit),'\_test'))
-            axis([0,1,0,1]);
-%             saveas(gcf,strcat(num2str(digit),'_test.png'));
-            hold off;
+%             title(strcat(num2str(digit),'\_test'))
+%             axis([0,1,0,1]);
+% %             saveas(gcf,strcat(num2str(digit),'_test.png'));
+%             hold off;
         end
     end
     
@@ -124,8 +125,8 @@ function [model, C, y_test] = augmented_model(data,class,train_size,dim, seed)
     for j=1:test_data_size
         for k=0:9
             s = strcat("digit_",num2str(k));
-%             C(k+1,j) = discriminant_function(test_data(:,j), model.(s).mu,model.(s).sigma)
             try
+%                 C(k+1,j) = discriminant(test_data(:,j), model.(s).mu,model.(s).sigma);
                 C(k+1,j) =  mvnpdf(test_data(:,j),model.(s).mu,model.(s).sigma); %we calculate the density function for test data with each model
             catch ME
                 C(k+1,j) = 0;
@@ -136,8 +137,11 @@ function [model, C, y_test] = augmented_model(data,class,train_size,dim, seed)
     y_test = y_test - 1; %because argmax would be from 1 to 10 we subtract 1 to go back to 0 to 9
     error = sum(y_test ~= test_class); % we compare our results with the expected values
     acc = (test_data_size-error)/(test_data_size) % we compute the accuracy
-    confusion = confusionmat(test_class,y_test) %we compute the confusion matrix
-    confusionchart(confusion)
+    if(DEBUG==true)
+        figure
+        confusion = confusionmat(test_class,y_test); %we compute the confusion matrix
+        confusionchart(confusion)
+    end  
     
     function model = bayesian_classifiers
         % For each digit we compute the sigmas and mus
@@ -148,5 +152,10 @@ function [model, C, y_test] = augmented_model(data,class,train_size,dim, seed)
             cov_mat(cov_mat<0)=0;
             model.(s).sigma = cov_mat;
         end
+    end
+
+    function g = discriminant(x,mu,sigma)
+    % logarithmic discriminant function with equal a priori posibilities
+    g = -0.5*(x-mu)'*inv(sigma)*(x-mu)-0.5*log(2*pi)-0.5*log(det(sigma));
     end
 end

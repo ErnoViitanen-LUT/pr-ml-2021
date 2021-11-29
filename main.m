@@ -4,9 +4,8 @@ if ~exist('DEBUG', 'var')
         DEBUG = false;
 end
 
-startIndex = 80;
-
 data=datanormalization(data);
+
 %testclass = mpl(data,class,data);
 simple = simplify(data);
 
@@ -18,10 +17,9 @@ summedEnd = endProbabilities ./ (sum(endProbabilities) + sum(startProbabilities)
 
 %summedStart = [summedStart; 1:10]
 
-
-
 if(DEBUG==true)
-    %plotstrokes(data,class,startIndex,6);
+    startIndex = 80;
+    plotstrokes(data,class,startIndex,3);
     %axis([0 1 0 1]);
 end
 
@@ -90,5 +88,14 @@ function probability = getProbabilities(data,row)
             probability(i,k) = a(j);
             %s1(i,j) = a();              
         end
+    end
+end
+
+function interpolated_data = interpolate(data)
+    len = length(data)
+    for i = 1:len
+        tmp = linear_interpolation(cell2mat(data(i)),10);
+        [tmp_m, tmp_n] = size(tmp);
+        data(i) = mat2cell(tmp,tmp_m,tmp_n);
     end
 end

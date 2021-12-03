@@ -51,7 +51,7 @@ seed = rng;
 for i = 1:k
     for j = 1:k
         [model, C, y, acc,acc_total]=augmented_model(divided_data(i,j,:),class, train_size,2, seed);
-        C_total(2*(i-1)+j,:,:) = C.*(acc'.*acc_total); 
+        C_total(2*(i-1)+j,:,:) = C.*(acc'); 
         y_total(2*(i-1)+j,:) = y; 
     end
 end

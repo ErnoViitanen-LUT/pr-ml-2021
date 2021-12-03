@@ -51,7 +51,7 @@ function [model, C, y_test, acc, acc_total] = augmented_model(data,class,train_s
         [x_train, x_test, seed]=test_train_split(num_dat,train_size,seed); %we split our data into training and testing
         % Training data %
         if(DEBUG==true)
-%             figure
+            figure
         end
         for i = 1:N_train
             train_class(:,digit*N_train+i) = digit; 
@@ -67,23 +67,23 @@ function [model, C, y_test, acc, acc_total] = augmented_model(data,class,train_s
                 continue;
             end
             if(DEBUG==true)
-%                 if(dim==2)
-%                     plot(avg(1),avg(2),'k.'); hold on
-%                 elseif(dim==3)
-%                     plot3(avg(1),avg(2),avg(3),'k.'); hold on
-%                 end
+                if(dim==2)
+                    plot(avg(1),avg(2),'k.'); hold on
+                elseif(dim==3)
+                    plot3(avg(1),avg(2),avg(3),'k.'); hold on
+                end
             end
             train_data(:,digit*N_train+i)=avg; % we assign the mean to our training dataset
         end
         if(DEBUG==true)
-%             title(strcat(num2str(digit),'\_train'))
-%             axis([0,1,0,1]);
+            title(strcat(num2str(digit),'\_train'))
+            axis([0,1,0,1]);
 %             saveas(gcf,strcat(num2str(digit),'_train.png')); %uncomment this if you want to save the results as a png file
-%             hold off;
+            hold off;
         end
         % Testing data %
         if(DEBUG==true)
-%             figure
+            figure
         end
         for i = 1:N_test
             test_class(:,digit*N_test+i) = digit; %we add information about the class
@@ -99,20 +99,20 @@ function [model, C, y_test, acc, acc_total] = augmented_model(data,class,train_s
                 continue;
             end
             if(DEBUG==true)
-%                 if(dim==2)
-%                     plot(avg(1),avg(2),'k.'); hold on
-%                 elseif(dim==3)
-%                     plot3(avg(1),avg(2),avg(3),'k.'); hold on
-%                 end
+                if(dim==2)
+                    plot(avg(1),avg(2),'k.'); hold on
+                elseif(dim==3)
+                    plot3(avg(1),avg(2),avg(3),'k.'); hold on
+                end
             end
             test_data(:,digit*N_test+i)=avg; % we assign the mean to the testing data
             
         end
         if(DEBUG==true)
-%             title(strcat(num2str(digit),'\_test'))
-%             axis([0,1,0,1]);
-% %             saveas(gcf,strcat(num2str(digit),'_test.png'));
-%             hold off;
+            title(strcat(num2str(digit),'\_test'))
+            axis([0,1,0,1]);
+%             saveas(gcf,strcat(num2str(digit),'_test.png'));
+            hold off;
         end
     end
     
@@ -132,6 +132,7 @@ function [model, C, y_test, acc, acc_total] = augmented_model(data,class,train_s
             end
         end
     end
+    
     [~,y_train] = max(C,[],1); %we choose the class which has the biggest value
     y_train = y_train - 1; %because argmax would be from 1 to 10 we subtract 1 to go back to 0 to 9
     acc_train = zeros(1,10);
@@ -156,6 +157,7 @@ function [model, C, y_test, acc, acc_total] = augmented_model(data,class,train_s
             end
         end
     end
+    C = normalize_pdf(C);
     [~,y_test] = max(C,[],1); %we choose the class which has the biggest value
     y_test = y_test - 1; %because argmax would be from 1 to 10 we subtract 1 to go back to 0 to 9
     acc = zeros(1,10);
@@ -186,5 +188,11 @@ function [model, C, y_test, acc, acc_total] = augmented_model(data,class,train_s
     function g = discriminant(x,mu,sigma)
     % logarithmic discriminant function with equal a priori posibilities
     g = -0.5*(x-mu)'*inv(sigma)*(x-mu)-0.5*log(2*pi)-0.5*log(det(sigma));
+    end
+
+    function C_normalized = normalize_pdf(C)
+        p_min = min(C,[],1); %find digit with minimum pdf
+        p_max = max(C,[],1); %find digit with maximum pdf
+        C_normalized = (C-p_min)./(p_max-p_min); %normalization
     end
 end

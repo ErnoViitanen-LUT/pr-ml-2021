@@ -13,9 +13,10 @@ function simple = simplify(data)
         simple = makeItSimple(sample,simple);
         simple(end+1:10)=0;
     end
-    simple = simple(1:10,:);
-    
+    simpleEnd = min(size(simple,1),10);
+    simple = simple(1:simpleEnd,:);
 end
+
 
 function simple = makeItSimple(sample,simple)
 

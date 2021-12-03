@@ -1,5 +1,4 @@
-function [model, C_sum, y_test, acc] = spliting_model(data,class,k,train_size,dim,seed)
-
+function [model, C_sum, y_test, acc, acc_total] = spliting_model(data,class,k,train_size,dim,seed)
 % AUGMENTEDSTATISTICALMODEL(data, class, train_size, dim, seed)
 DEBUG=true;
 if ~exist('DEBUG', 'var') %checks if DEBUG variable exists, if not we assume DEBUG = false
@@ -34,9 +33,9 @@ if(train_size<=0 || train_size>1)
     error("Train size must be a value from (0,1)");
 end
 
-if(DEBUG==true)
-%     close all; % if debug is true, close all figures generated in the previous run
-end
+% if(DEBUG==true)
+% %     close all; % if debug is true, close all figures generated in the previous run
+% end
 
 divided_data = cell(k,k,data_size);
 train_data_size = round(train_size*data_size);
@@ -51,12 +50,11 @@ end
 seed = rng;
 for i = 1:k
     for j = 1:k
-        [model, C, y, acc]=augmented_model(divided_data(i,j,:),class, train_size,2, seed);
-        C_total(2*(i-1)+j,:,:) = C*acc; 
+        [model, C, y, acc,acc_total]=augmented_model(divided_data(i,j,:),class, train_size,2, seed);
+        C_total(2*(i-1)+j,:,:) = C.*(acc'); 
         y_total(2*(i-1)+j,:) = y; 
     end
 end
-close all;
 C_sum = sum(C_total,1);
 
 [~,y_test] = max(C_sum,[],2); %we choose the class which has the biggest value
@@ -67,10 +65,16 @@ for digit = 0:9
     test_class(:,(digit)*(test_data_size/10)+1:(digit+1)*(test_data_size/10))=digit;
 end
 
+acc = zeros(1,10);
+for i = 1:10 
+    err = sum(y_test(test_class==i-1) ~= test_class(test_class==i-1)); % we compare our results with the expected values
+    acc(i) = (test_data_size/10-err)/(test_data_size/10); % we compute the accuracy
+end
 err = sum(y_test ~= test_class); % we compare our results with the expected values
-acc = (test_data_size-err)/(test_data_size) % we compute the accuracy
+acc_total = (test_data_size-err)/(test_data_size) % we compute the accuracy
 if(DEBUG == true)
     figure
     confusion = confusionmat(test_class,y_test); %we compute the confusion matrix
     confusionchart(confusion)
+    title('Spliting')
 end

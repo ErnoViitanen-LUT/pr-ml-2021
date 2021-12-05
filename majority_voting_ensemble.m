@@ -8,6 +8,7 @@ function majority_voting_ensemble(C1,y_test1,acc1,acc1_total,C2,y_test2,acc2,acc
 test_class = zeros(1,length(y_test1));
 test_data_size = length(test_class);
 C2 = reshape(C2,10,test_data_size);
+
 DEBUG=true;
 % y1 = exp(1./(1-acc1));
 % y2 = exp(1./(1-acc2));

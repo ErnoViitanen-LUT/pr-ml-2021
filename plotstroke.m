@@ -1,4 +1,4 @@
-function plotstrokes(data,prob)
+function plotstroke(data,prob)
     % plot strokes starting from sampleIndex
     % plotDigit [optional]: plot alternatively one digit multiple times
     
@@ -6,16 +6,24 @@ function plotstrokes(data,prob)
         sampleIndex = 1;
     end
    
-    hFig = figure;   
+    global hFig;
+    if ~hFig
+        hFig = figure;   
+    end
     sample = data;
-    plot(sample(:,1), sample(:,2));
+    plot(sample(:,1), sample(:,2));    
+    axis([0 1 0 1]);
     hold on;
+    
     [pos,intersection,segment,interpos] = plotrects(sample);    
-    top3 = strcat(mat2str(prob(2,1)),sprintf(': %.3f',(prob(1,1))),", ",...
-        mat2str(prob(2,2)),sprintf(': %.3f',(prob(1,2))),", ",...
-        mat2str(prob(2,3)),sprintf(': %.3f',(prob(1,3))))
-    title("Predicted: " + prob(2,1), top3 + " s/e: " + pos(1) +"/"+ pos(2) + ", i: " + mat2str(interpos));
-
+    if exist('prob', 'var')        
+        %top3 = strcat(mat2str(prob(1,1)),sprintf(': %.3f',(prob(1,2))),", ",...
+        %    mat2str(prob(2,1)),sprintf(': %.3f',(prob(2,2))),", ",...
+        %    mat2str(prob(2,1)),sprintf(': %.3f',(prob(3,2))))
+        %title("Predicted: " + prob(2,1), top3 + " s/e: " + pos(1) +"/"+ pos(2) + ", i: " + mat2str(interpos));
+        
+    end
+    drawnow;
     hold off;
 end
 
@@ -37,7 +45,7 @@ function [pos,intersection,segment,interpos] = plotrects(sample)
         for k=1:9
             for i=1:length(xy0(:,1))
                 if interpos(i) == 0
-                    interpos(i) = plotOneRect(xy0(i,:),k,"green");
+                    interpos(i) = plotOneRect(xy0(i,:),k,"green",sample);
                 end
             end
         end
@@ -66,15 +74,15 @@ function [pos,intersection,segment,interpos] = plotrects(sample)
     pos(:,3) = interpos';
     for k=1:9
         if pos(1) == 0
-            pos(1) = plotOneRect(sampleStart(1,:),k,"red");
+            pos(1) = plotOneRect(sampleStart(1,:),k,"red",sample);
         end
         if pos(2) == 0
-            pos(2) = plotOneRect(sampleEnd(1,:),k,"blue");
+            pos(2) = plotOneRect(sampleEnd(1,:),k,"blue",sample);
         end
     end    
 end
 
-function foundInPos = plotOneRect(sample,pos,color)
+function foundInPos = plotOneRect(sample,pos,color,fullsample)
     foundInPos = 0;
     if pos == 1 %bottomleft
         x=[0,1/3,1/3,0];
@@ -104,6 +112,8 @@ function foundInPos = plotOneRect(sample,pos,color)
         x=[1-1/3,1,1,1-1/3];
         y=[1-1/3,1-1/3,1,1];
     end
+    %x
+    %x = x * max(fullsample(:,1))
     in = inpolygon(sample(:,1),sample(:,2),x,y);
     if any(in)
         foundInPos = pos;

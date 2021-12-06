@@ -1,5 +1,5 @@
 loadstrokes;
-DEBUG = true;
+DEBUG = false;
 if ~exist('DEBUG', 'var')
         DEBUG = false;
 end
@@ -8,30 +8,60 @@ end
 %class=class(1:101)
 
 data=datanormalization(data);
+    
+n = size(data,2);
+pTrain = 2/3;
+pValidate = 0;
+nTrain = ceil(pTrain * n);
+nValidate = ceil(pValidate * n);
+i = randperm(n);
+trainData = data(i(1:nTrain));
+trainClass = class(i(1:nTrain));
+testData = data(i(nTrain+nValidate+1:end));
+testClass = class(i(nTrain+nValidate+1:end));
 
 %testclass = mpl(data,class,data);
-simple = simplify(data);
-[startProbabilities,endProbabilities,sumProbabilities] = simpleprobability(simple,class);
-predictedClass = simplepredict(data,startProbabilities,endProbabilities, sumProbabilities);
+simple = simplify(trainData);
+[startProbabilities,endProbabilities,emptyProbabilities] = simpleprobability(simple,trainClass);
 
-top4 = zeros(1,size(class,2));
-for i=1:size(class,2)
-    if any(class(i)==predictedClass(:,i))
-        top4(i) = class(i);
-    else
-        top4(i) = predictedClass(1,i);
-    end
+predictedClass = simpleprediction(testData,startProbabilities,endProbabilities,emptyProbabilities);
 
-end
+preClass = predictedClass(1,:);
+%{
+figure;
+confusion = confusionmat(testClass,predictedClass(5,:));
+cm = confusionchart(confusion);
+cm.Title = "Start";
+figure;
+confusion = confusionmat(testClass,predictedClass(4,:));
+cm = confusionchart(confusion);
+cm.Title = "End";
+figure;
+confusion = confusionmat(testClass,predictedClass(3,:));
+cm = confusionchart(confusion);
+cm.Title = "Start + End";
+figure;
+confusion = confusionmat(testClass,predictedClass(2,:));
+cm = confusionchart(confusion);
+cm.Title = "Empty";
 
-figure
-confusion = confusionmat(class,predictedClass(1,:));
-confusionchart(confusion)
 
-figure
-confusion = confusionmat(class,top4);
-confusionchart(confusion)
+preClass = predictedClass(1,:);
+fh = figure;
+confusion = confusionmat(testClass,predictedClass(1,:));
+cm = confusionchart(confusion);
+cm.Title = "Start + End + Empty";
+%}
 
+data_size = size(testData,2);
+err = sum(testClass ~= preClass); % we compare our results with the expected values
+acc = (data_size-err)/(data_size) % we compute the accuracy
+
+
+    fh = figure;
+    confusion = confusionmat(testClass,predictedClass(1,:));
+    cm = confusionchart(confusion);
+    cm.Title = "Start + End + Empty";
 
 %simple
 %startProbabilities
@@ -48,8 +78,19 @@ confusionchart(confusion)
 
 if(DEBUG==true)
     startIndex = 80;
-    plotstrokes(data,class,startIndex);
+
+    inputPoints = interactive_digit_input;
+    inputPoints = datanormalization(inputPoints);
+    fprintf("done waiting...")
+    predicted = simplepredict(inputPoints,startProbabilities,endProbabilities,emptyProbabilities)
+    plotstroke(inputPoints,predicted);
+    
+    %plotstrokes(data,class,startIndex);
     %axis([0 1 0 1]);
+    fh = figure;
+    confusion = confusionmat(testClass,predictedClass(1,:));
+    cm = confusionchart(confusion);
+    cm.Title = "Start + End + Empty";
 end
 
 %inputPoints = interactive_digit_input;
@@ -80,45 +121,66 @@ end
 %startProbability = getProbabilityForRow(simple,1)
 %endProbability = getProbabilityForRow(simple,2)
 
-function predictedClass = simplepredict(test,startProbabilities,endProbabilities,sumProbabilities)
-    N = size(test,2);
-    predictedClass = zeros(4,N)
-    
+function predictedClass = simplepredict(test,startProbabilities,endProbabilities,emptyProbabilities)
+    [M,N] = size(test);
+    predictedClass = zeros(5,N);
+    M
+    N
+    if M ~= 1
+        N = 1;
+    end
     for i=1:N
-        stroke = cell2mat(test(i));
+        if M == 1
+            stroke = cell2mat(test(i));
+        else
+            stroke = test;
+        end
         simple = simplify(stroke);
 
         strokeStart = simple(1,:);
         strokeEnd = simple(2,:);
+        strokeEmpty = simple(3:end,:);
+        emptyProbability = zeros(10,1);
 
-        %startProbability = sortByColumn([startProbabilities(:,strokeStart) [1:10]'],1)'
-        %endProbability = sortByColumn([endProbabilities(:,strokeEnd) [1:10]'],1)'
+        %startProbabilities
+        %strokeStart
+        %startProbabilities(strokeStart,:)
+        sortedStartProbability = sortByColumn([startProbabilities(strokeStart,:)' [1:10]'],1)';
+        sortedEndProbability = sortByColumn([endProbabilities(strokeEnd,:)' [1:10]'],1)';
+
+        K = size(strokeEmpty,1);
         
-        sumProbability = sortByColumn([(startProbabilities(:,strokeStart) + endProbabilities(:,strokeEnd)) / 2 [1:10]'],1)'
+        for j=1:K
+            if any(strokeEmpty(j))
+                probabilitiesForEmptyGridPos = emptyProbabilities(strokeEmpty(j),:)';                
+                emptyProbability(:,j) = probabilitiesForEmptyGridPos;
+            end
+        end
+        
+        sumEmptyProbability = sum(emptyProbability,2);
+        sumProbability = [(startProbabilities(strokeStart,:) + endProbabilities(strokeEnd,:)) / 2]';
+        %sumEmptyProbability + 
 
+        sortedSumProbability = sortByColumn([sumProbability [1:10]'],1)';
+        summedEmptyStartEnd = sumProbability + sumEmptyProbability;
+        sortedEmptyStartEndProbability = sortByColumn([summedEmptyStartEnd [1:10]'],1)';
+
+
+        sortedEmptyProbability = sortByColumn([sumEmptyProbability [1:10]'],1)';
+                        
+%sortedEmptyStartEndProbability
         %topRandom = randi([1,4]);
-        predictedClass(:,i) = sumProbability(2,1:4);
+        predictedClass(1,i) = sortedEmptyStartEndProbability(2,1);
+        predictedClass(2,i) = sortedSumProbability(2,1);
+        predictedClass(3,i) = sortedEmptyProbability(2,1);
+        predictedClass(4,i) = sortedStartProbability(2,1);
+        predictedClass(5,i) = sortedEndProbability(2,1);
+
     end
 end
-function weightedProbability(startProb,endProb)
-    numWeights = 4;
-    for i=1:numWeights
-        weight = startProb(:,1);
-        endProb(1,find(endProb(2,:) == weight(2)))
-        startProb(1,1);
-    end
-end
+    
 
 function sorted = sortByColumn(x,col)
     [~,idx] = sort(x(:,col),'descend'); % sort by distance in ascending order
     sorted = x(idx,:);   % sort the whole matrix using the sort indices
-end
-
-function interpolated_data = interpolate(data)
-    len = length(data)
-    for i = 1:len
-        tmp = linear_interpolation(cell2mat(data(i)),10);
-        [tmp_m, tmp_n] = size(tmp);
-        data(i) = mat2cell(tmp,tmp_m,tmp_n);
-    end
 end

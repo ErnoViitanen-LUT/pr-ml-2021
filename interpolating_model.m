@@ -1,9 +1,4 @@
-loadstrokes;
-data = datanormalization2d(data);
-class = class-1;
-[model, C, y_test, acc, acc_total] = interpolating_model(data,class,0.7,3,300);
-function [model, C, y_test, acc, acc_total] = interpolating_model(data,class,train_size,dim, intpol_num, seed)
-    DEBUG=true;
+function [model, C, y_test, acc, acc_total] = interpolating_model(data,class,train_size,dim, intpol_num, seed, DEBUG)
     if ~exist('DEBUG', 'var') %checks if DEBUG variable exists, if not we assume DEBUG = false
         DEBUG = false;
     end
@@ -39,7 +34,7 @@ function [model, C, y_test, acc, acc_total] = interpolating_model(data,class,tra
     train_class = zeros(1,train_data_size);
     test_data = zeros(data_size-train_data_size,intpol_num,dim);
     test_class = zeros(1,data_size - train_data_size);
-    test_data_size = size(test_data,2);
+    test_data_size = data_size - train_data_size;
     
     model = struct;
     
@@ -53,7 +48,7 @@ function [model, C, y_test, acc, acc_total] = interpolating_model(data,class,tra
         
         for i = 1:N_train
             x = linear_interpolation(cell2mat(x_train(i)),intpol_num);
-            train_data(digit*N_train+i,:,:)=x;
+            train_data(digit*N_train+i,:,:)=x(:,1:dim);
         end
         
         train_class(digit*N_train+1:(digit+1)*N_train) = digit;
@@ -68,7 +63,7 @@ function [model, C, y_test, acc, acc_total] = interpolating_model(data,class,tra
         
         for i= 1:N_test
             x = linear_interpolation(cell2mat(x_test(i)),intpol_num);
-            test_data(digit*N_test+i,:,:) = x;
+            test_data(digit*N_test+i,:,:) = x(:,1:dim);
         end
         
         test_class(digit*N_test+1:(digit+1)*N_test) = digit;
@@ -107,8 +102,12 @@ function [model, C, y_test, acc, acc_total] = interpolating_model(data,class,tra
     C = zeros(test_data_size,10,intpol_num);
     
     for i = 1:test_data_size
-        x = reshape(test_data(i,:,:),intpol_num,dim);
-        for digit = 0:9
+        try
+            x = reshape(test_data(i,:,:),intpol_num,dim);
+        catch Me
+            disp(Me)
+        end
+            for digit = 0:9
             for j = 1:intpol_num
                 s = strcat("digit_",num2str(digit));
                 C(i,digit+1,j) = mvnpdf(x(j,:),model.(s).mu(j,:),model.(s).sigma);
@@ -117,7 +116,7 @@ function [model, C, y_test, acc, acc_total] = interpolating_model(data,class,tra
     end
     
     C_sum = sum(C,3);
-    [~,y_test] = max(C_sum,[],2)
+    [~,y_test] = max(C_sum,[],2);
     y_test = y_test - 1;%because argmax would be from 1 to 10 we subtract 1 to go back to 0 to 9
     y_test = y_test';
     acc = zeros(1,10);

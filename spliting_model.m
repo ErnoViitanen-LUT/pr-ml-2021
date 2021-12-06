@@ -1,4 +1,4 @@
-function [model, C_sum, y_test, acc, acc_total] = spliting_model(data,class,k,train_size,dim,seed)
+function [model, C_sum, y_test, acc, acc_total] = spliting_model(data,class,k,train_size,dim,seed, DEBUG)
 % AUGMENTEDSTATISTICALMODEL(data, class, train_size, dim, seed)
 DEBUG=true;
 if ~exist('DEBUG', 'var') %checks if DEBUG variable exists, if not we assume DEBUG = false

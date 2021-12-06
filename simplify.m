@@ -22,7 +22,7 @@ function simple = makeItSimple(sample,simple)
 
     positions = getRectPositions(sample);
 
-    sx = size(simple);
+    sx = 10;
     sy = size(positions);
     a = max(sx(1),sy(1));
     simple = [[simple;zeros(abs([a 0]-sx))],[positions;zeros(abs([a,0]-sy))]];
@@ -32,8 +32,9 @@ function positions = getRectPositions(sample)
     
     rect(1) = findPosition(sample,'start');
     rect(2) = findPosition(sample,'end');
+    emptys = findPosition(sample,'empty');
     intersections = findIntersections(sample);
-    positions = [rect';intersections'];
+    positions = [rect';emptys'];
 end
 
 function interrects = findIntersections(sample)
@@ -42,7 +43,7 @@ function interrects = findIntersections(sample)
     xy = [x0,y0];
     interrects = zeros(1,length(xy));
     for i=1:length(xy)             
-        interrects(i) = findRectPosition(xy);
+        interrects(i) = findRectPosition(xy,"intersection");
     end    
     
 end
@@ -55,16 +56,20 @@ function position = findPosition(sample,startOrEnd)
     sampleEnd = sample(sampleSize - numPointsInSample:sampleSize,:);
     
     if startOrEnd == "start"
-        position = findRectPosition(sampleStart);
+        position = findRectPosition(sampleStart,startOrEnd);
+    elseif startOrEnd == "end"
+        position = findRectPosition(sampleEnd,startOrEnd);
     else
-        position = findRectPosition(sampleEnd);
+        position = findRectPosition(sample,startOrEnd);
     end
 
 end
 
-function foundInPos = findRectPosition(sample)
+function foundInPos = findRectPosition(sample,sampleType)
     foundInPos = 0;   
 
+    %sampleSize = size(sample,1);
+    %sprintf("sample %s %d\n",sampleType,sampleSize);
     for pos=1:9
         if pos == 1 %bottomleft
             x=[0,1/3,1/3,0];
@@ -95,9 +100,17 @@ function foundInPos = findRectPosition(sample)
             y=[1-1/3,1-1/3,1,1];
         end
         in = inpolygon(sample(:,1),sample(:,2),x,y);
-        if any(in)
+        % start & end
+        if sampleType ~= "empty" && any(in)
             foundInPos = pos;
             break
+        % empty positions
+        elseif sampleType == "empty" && ~any(in)            
+            if foundInPos == 0
+                foundInPos = pos;
+            else
+                foundInPos = [foundInPos pos];
+            end
         end
     end
 end

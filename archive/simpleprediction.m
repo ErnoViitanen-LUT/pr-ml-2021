@@ -1,5 +1,5 @@
 
-function predictedClass = simpleprediction(test,model)
+function [summedEmptyStartEnd,predictedClass] = simpleprediction(test,model)
     [M,N] = size(test);
     predictedClass = zeros(5,N);
     if M ~= 1 % we are predicting only one stroke

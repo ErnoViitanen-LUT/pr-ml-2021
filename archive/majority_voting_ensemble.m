@@ -8,6 +8,7 @@ function y_test = majority_voting_ensemble(data)
 
 load('models.mat');
 load('new_split_model.mat');
+load('modelBest.mat')
 
 %Choose the best models
 m1 = model_benchmark.intpol_model_attempt_4_train_r_90_dim_3;
@@ -78,7 +79,13 @@ acc1_tot = 0.764;
 acc2_tot = 0.464;
 acc3_tot = 0.5067;
 
-C = C1+(C3.*m_acc3');
+[C4,~] = simpleprediction(data,betterModel);
+p_min = min(C4); %find digit with minimum pdf
+p_max = max(C4); %find digit with maximum pdf
+C_4 = (C4-p_min)./(p_max-p_min);
+
+C = C_4;
+% C1+(C3.*m_acc3');
 % +(C3.*m_acc3')
 % .*exp((m1.acc')+4*eps).^2 + C2.*exp((m2.acc')+4*eps).^2 + C3.*exp((m3.acc')+4*eps).^2;
 [~,y_test] = max(C); %we choose the class which has the biggest value

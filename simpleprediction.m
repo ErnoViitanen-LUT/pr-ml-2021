@@ -1,5 +1,5 @@
 
-function predictedClass = simpleprediction(test,startProbabilities,endProbabilities,emptyProbabilities)
+function predictedClass = simpleprediction(test,model)
     [M,N] = size(test);
     predictedClass = zeros(5,N);
     if M ~= 1 % we are predicting only one stroke
@@ -17,28 +17,27 @@ function predictedClass = simpleprediction(test,startProbabilities,endProbabilit
         strokeEnd = simple(2,:);
         strokeEmpty = simple(3:end,:);
         emptyProbability = zeros(10,1);
-        sortedStartProbability = sortByColumn([startProbabilities(strokeStart,:)' [1:10]'],1)';
-        sortedEndProbability = sortByColumn([endProbabilities(strokeEnd,:)' [1:10]'],1)';
+        sortedStartProbability = sortByColumn([model.startProbabilities(strokeStart,:)' [1:10]'],1)';
+        sortedEndProbability = sortByColumn([model.endProbabilities(strokeEnd,:)' [1:10]'],1)';
 
         K = size(strokeEmpty,1);
         
         for j=1:K
             if any(strokeEmpty(j))
-                probabilitiesForEmptyGridPos = emptyProbabilities(strokeEmpty(j),:)';                
+                probabilitiesForEmptyGridPos = model.emptyProbabilities(strokeEmpty(j),:)';                
                 emptyProbability(:,j) = probabilitiesForEmptyGridPos;
             end
         end
         
         sumEmptyProbability = sum(emptyProbability,2);
-        sumProbability = [(startProbabilities(strokeStart,:) + endProbabilities(strokeEnd,:)) / 2]';
+        sumProbability = [(model.startProbabilities(strokeStart,:) + model.endProbabilities(strokeEnd,:)) / 2]';
         %sumEmptyProbability + 
 
         sortedSumProbability = sortByColumn([sumProbability [1:10]'],1)';
+        sortedEmptyProbability = sortByColumn([sumEmptyProbability [1:10]'],1)';
+
         summedEmptyStartEnd = sumProbability + sumEmptyProbability;
         sortedEmptyStartEndProbability = sortByColumn([summedEmptyStartEnd [1:10]'],1)';
-
-
-        sortedEmptyProbability = sortByColumn([sumEmptyProbability [1:10]'],1)';
 
         predictedClass(1,i) = sortedEmptyStartEndProbability(2,1);
         predictedClass(2,i) = sortedSumProbability(2,1);

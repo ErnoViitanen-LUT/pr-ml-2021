@@ -20,7 +20,7 @@ function plotstroke(data,prob)
         %top3 = strcat(mat2str(prob(1,1)),sprintf(': %.3f',(prob(1,2))),", ",...
         %    mat2str(prob(2,1)),sprintf(': %.3f',(prob(2,2))),", ",...
         %    mat2str(prob(2,1)),sprintf(': %.3f',(prob(3,2))))
-        %title("Predicted: " + prob(2,1), top3 + " s/e: " + pos(1) +"/"+ pos(2) + ", i: " + mat2str(interpos));
+        title("Predicted: " + (prob(1,1) - 1));
         
     end
     drawnow;

@@ -1,18 +1,17 @@
-function [startProbabilities,endProbabilities,emptyProbabilities] = simpleprobability(simple,class)
+function model = simpleprobability(simple,class)
     
-    startDistributions = getDistributions(simple,1,class);
-    endDistributions = getDistributions(simple,2,class);
-    emptyDistributions = getEmptyDistributions(simple(3:end,:),class);        
-    startProbabilities = startDistributions ./ (sum(startDistributions));
-    endProbabilities = endDistributions ./ (sum(endDistributions));    
-    emptyProbabilities = emptyDistributions ./ (sum(emptyDistributions));
     
+    model.startDistributions = getDistributions(simple,1,class);
+    model.endDistributions = getDistributions(simple,2,class);
+    model.emptyDistributions = getEmptyDistributions(simple(3:end,:),class);        
+    model.startProbabilities = model.startDistributions ./ (sum(model.startDistributions));
+    model.endProbabilities = model.endDistributions ./ (sum(model.endDistributions));    
+    model.emptyProbabilities = model.emptyDistributions ./ (sum(model.emptyDistributions));
+
 end
 
 function distribution = getEmptyDistributions(data,class)
-    distribution = zeros(9,10); % assume 1-9 grid with 0-9 digits   
-
-    
+    distribution = zeros(9,10); % assume 1-9 grid with 0-9 digits       
     for digit=1:10
         digit_data = data(:,class==digit);
 
@@ -38,10 +37,8 @@ function distribution = getDistributions(data,row,class)
     %numCols = size(data,2);
     
     for i=1:numRows
-        % get occurences for each stroke start/end position and class
-        
-        [counts,centers]=hist(data(row,class == i),unique(data(row, class == i)));
-        
+        % get occurences for each stroke start/end position and class        
+        [counts,centers]=hist(data(row,class == i),unique(data(row, class == i)));        
         % create distribution matrix 
         % [10x9] -> [1-10,1-9] -> [number,gridpos]      
         % [3,7]: number 3 distribution to start/end in gridpos 7

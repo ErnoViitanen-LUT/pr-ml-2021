@@ -1,4 +1,10 @@
 function data = datanormalization2d(data)
+% DATANORMALIZATION2D(data) - normalize data with preserving a ratio
+% between X and Y axis
+% INPUT:
+%     data - data to be normalized
+% OUTPUT:
+%     data - normalized data
     if ~exist('DEBUG', 'var')
         DEBUG = false;
     end

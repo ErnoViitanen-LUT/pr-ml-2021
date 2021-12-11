@@ -1,3 +1,4 @@
+% File used for training the models using various parameters
 loadstrokes;
 data = datanormalization2d(data);
 class = class-1;

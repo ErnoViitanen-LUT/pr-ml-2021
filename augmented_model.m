@@ -1,5 +1,20 @@
 function [model, C, y_test, acc, acc_total] = augmented_model(data,class,train_size,dim, seed, DEBUG)
-% AUGMENTEDSTATISTICALMODEL(data, class, train_size, dim, seed)
+% AUGMENTED_MODEL(data, class, train_size, dim, seed) - basic Bayesian
+% model using only the means of each sample
+% INPUT:
+%     data - cell row or column vector
+%     class - class containing an information which digit a sample represents
+%     train_size - value between 0 and 1 (exclusive) determining the ratio of
+%     training dataset to the testing dataset
+%     dim - dimensionality of the data samples (possible values are 2 or 3)
+%     seed - random seed used for reproducibility
+%     DEBUG - a flag used to display additional information in the debug
+% OUTPUT:
+%     model - a struct containing all the information needed to recreate the model
+%     C - probability matrix containg all the probabilites for each sample (10 digits x number of samples)
+%     y_test - classes assigned by the model to be the most probable
+%     acc - accuracy to predict each digit (10 values)
+%     acc_total - total accuracy of the model (1 value)
     if ~exist('DEBUG', 'var') %checks if DEBUG variable exists, if not we assume DEBUG = false
         DEBUG = false;
     end

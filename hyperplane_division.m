@@ -1,9 +1,11 @@
 function result = hyperplane_division(data,n)
 % HYPERPLANE DIVISION
 % Function divides a hyperplane into n^2 squares
-% where 
-% data - cell of a normalized hyperplane
-% n - number of squares in a row/column
+% INPUT:
+%     data - cell of a normalized hyperplane
+%     n - number of squares in a row/column
+% OUTPUT:
+%     result - cell(n,n) with points from data splitted into subspaces
 data = cell2mat(data);
 result = cell(n);
 for i = [1:n]

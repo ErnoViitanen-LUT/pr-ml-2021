@@ -1,5 +1,23 @@
 function [model, C_sum, y_test, acc, acc_total] = spliting_model(data,class,k,train_size,dim,seed, DEBUG)
-% AUGMENTEDSTATISTICALMODEL(data, class, train_size, dim, seed)
+% SPLITING_MODEL(data,class,train_size,dim,intpol_num,seed,DEBUG) -
+% enhanced augmented model which splits the sample hyperspace into kxk
+% subspaces
+% INPUT:
+%     data - cell row or column vector
+%     class - class containing an information which digit a sample represents
+%     k - number how much split the hyperplane in a row/column
+%     train_size - value between 0 and 1 (exclusive) determining the ratio of
+%     training dataset to the testing dataset
+%     dim - dimensionality of the data samples (possible values are 2 or 3)
+%     intpol_num - number of the points to which the each sample will be interpolated
+%     seed - random seed used for reproducibility
+%     DEBUG - a flag used to display additional information in the debug
+% OUTPUT:
+%     model - a struct containing all the information needed to recreate the model
+%     C - probability matrix containg all the probabilites for each sample (10 digits x number of samples)
+%     y_test - classes assigned by the model to be the most probable
+%     acc - accuracy to predict each digit (10 values)
+%     acc_total - total accuracy of the model (1 value)
 DEBUG=true;
 if ~exist('DEBUG', 'var') %checks if DEBUG variable exists, if not we assume DEBUG = false
     DEBUG = false;
@@ -43,16 +61,22 @@ test_data_size = data_size-train_data_size;
 test_class = zeros(1,test_data_size);
 C_total = zeros(k^2, 10, test_data_size);
 y_total = zeros(k^2, test_data_size);
-
+model= struct;
+p_str = 'part_';
 for i = 1:data_size
     divided_data(:,:,i) = hyperplane_division(data(i),k);
 end
 seed = rng;
 for i = 1:k
     for j = 1:k
-        [model, C, y, acc,acc_total]=augmented_model(divided_data(i,j,:),class, train_size,2, seed);
+        [m, C, y, acc,acc_total]=augmented_model(divided_data(i,j,:),class, train_size,dim, seed);
+        part_str = strcat(p_str,num2str(2*(i-1)+j));
+        model.(part_str).m = m;
+        model.(part_str).acc = acc;
+        
         C_total(2*(i-1)+j,:,:) = C.*(acc'); 
-        y_total(2*(i-1)+j,:) = y; 
+        y_total(2*(i-1)+j,:) = y;
+        
     end
 end
 C_sum = sum(C_total,1);

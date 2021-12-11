@@ -1,8 +1,23 @@
 close all
+clear all
+clc
 loadstrokes;
 data = datanormalization2d(data);
 class = class-1;
 seed = rng;
-[model1, C1, y_test1, acc1, acc1_total] = augmented_model(data,class,0.8,2,seed);
-% [model2, C2, y_test2, acc2, acc2_total]=spliting_model(data,class,2,0.8,2,seed);
-% majority_voting_ensemble(C1,y_test1,acc1, acc1_total, C2,y_test2,acc2, acc2_total)
+data_len = length(data);
+y_test = zeros(1,data_len);
+DEBUG = true; 
+
+for i = 1:data_len
+    disp(i)
+   y_test(1,i) = majority_voting_ensemble(cell2mat(data(i)));
+end
+if(DEBUG == true)
+    err = sum(y_test ~= class); % we compare our results with the expected values
+    acc = (data_len-err)/(data_len) % we compute the accuracy
+    figure
+    confusion = confusionmat(class,y_test); %we compute the confusion matrix
+    confusionchart(confusion)
+    title('Voting')
+end

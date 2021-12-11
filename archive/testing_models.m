@@ -2,7 +2,6 @@ close all
 clear all
 clc
 loadstrokes;
-data = datanormalization2d(data);
 class = class-1;
 seed = rng;
 data_len = length(data);
@@ -10,8 +9,7 @@ y_test = zeros(1,data_len);
 DEBUG = true; 
 
 for i = 1:data_len
-    disp(i)
-   y_test(1,i) = majority_voting_ensemble(cell2mat(data(i)));
+   y_test(1,i) = digit_classify(cell2mat(data(i)));
 end
 if(DEBUG == true)
     err = sum(y_test ~= class); % we compare our results with the expected values

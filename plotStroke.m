@@ -1,7 +1,5 @@
-function plotStroke(data,prob)
-    % plot strokes starting from sampleIndex
-    % plotDigit [optional]: plot alternatively one digit multiple times
-    
+function plotStroke(data)
+    % plot a single stroke    
     if ~exist('sampleIndex', 'var')
         sampleIndex = 1;
     end
@@ -16,27 +14,20 @@ function plotStroke(data,prob)
     hold on;
     
     plotrects(sample)
-    if exist('prob', 'var')        
-        %top3 = strcat(mat2str(prob(1,1)),sprintf(': %.3f',(prob(1,2))),", ",...
-        %    mat2str(prob(2,1)),sprintf(': %.3f',(prob(2,2))),", ",...
-        %    mat2str(prob(2,1)),sprintf(': %.3f',(prob(3,2))))
-        title("Predicted: " + (prob(1,1) - 1));
-        
-    end
     drawnow;
     hold off;
 end
 
 function [pos] = plotrects(sample)
-    % plot rectangles for start and end samples 
+% plot samples and highlight rectangles for start and end samples 
     numPointsInSample = 2;
     sampleStart=sample(1:numPointsInSample,:);
     sampleSize = size(sample,1);
     sampleEnd = sample(sampleSize - numPointsInSample:sampleSize,:);
     plot(sampleStart(:,1),sampleStart(:,2),"rx");
     plot(sampleEnd(:,1),sampleEnd(:,2),"bx");
-    sample
-   pos = [0,0];
+    
+    pos = [0,0];
     for k=1:9
         if pos(1) == 0
             pos(1) = plotOneRect(sampleStart(1,:),k,"red");
@@ -48,6 +39,7 @@ function [pos] = plotrects(sample)
 end
 
 function foundInPos = plotOneRect(sample,pos,color)
+% Hightlight rect position with color
     foundInPos = 0;
     if pos == 1 %bottomleft
         x=[0,1/3,1/3,0];

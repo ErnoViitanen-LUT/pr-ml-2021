@@ -1,5 +1,5 @@
-function [model, C, y_test, acc, acc_total] = interpolating_model(data,class,train_size,dim, intpol_num, seed, DEBUG)
-% INTERPOLATING_MODEL(data,class,train_size,dim,intpol_num,seed,DEBUG) -  creates an interpolating model
+function [model, C, y_test, acc, acc_total] = interpolatingModel(data,class,train_size,dim, intpol_num, seed, DEBUG)
+% interpolatingModel(data,class,train_size,dim,intpol_num,seed,DEBUG) -  creates an interpolating model
 % INPUT:
 %     data - cell row or column vector
 %     class - class containing an information which digit a sample represents
@@ -61,10 +61,10 @@ function [model, C, y_test, acc, acc_total] = interpolating_model(data,class,tra
         N = length(num_dat); 
         N_train = round(N*train_size);
         N_test = N-N_train;
-        [x_train, x_test, seed]=test_train_split(num_dat,train_size,seed);
+        [x_train, x_test, seed]=testTrainSplit(num_dat,train_size,seed);
         
         for i = 1:N_train
-            x = linear_interpolation(cell2mat(x_train(i)),intpol_num);
+            x = linearInterpolation(cell2mat(x_train(i)),intpol_num);
             train_data(digit*N_train+i,:,:)=x(:,1:dim);
         end
         
@@ -79,7 +79,7 @@ function [model, C, y_test, acc, acc_total] = interpolating_model(data,class,tra
         model.(s).sigma = cov_mat;
         
         for i= 1:N_test
-            x = linear_interpolation(cell2mat(x_test(i)),intpol_num);
+            x = linearInterpolation(cell2mat(x_test(i)),intpol_num);
             test_data(digit*N_test+i,:,:) = x(:,1:dim);
         end
         

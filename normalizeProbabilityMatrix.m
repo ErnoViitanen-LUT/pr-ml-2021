@@ -1,5 +1,5 @@
-function C_normalized = normalize_pdf(C)
-% NORMALIZE_PDF(C) - normalizes probability matrix to values from 0 to 1
+function C_normalized = normalizeProbabilityMatrix(C)
+% normalizeProbabilityMatrix(C) - normalizes probability matrix to values from 0 to 1
 % INPUT:
 %     C - probability matrix
 % OUTPUT:

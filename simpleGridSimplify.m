@@ -1,4 +1,9 @@
 function simple = simpleGridSimplify(data)
+% simpleGridSimplify(data) - creates simple grid from data
+% INPUT:
+%     data - data matrix
+% OUTPUT:
+%     simple - simple grid 
 
     simple = [];
     if isa(data,'cell')

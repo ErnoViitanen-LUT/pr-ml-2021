@@ -94,7 +94,7 @@ end
 function interpolated_data = interpolate(data)
     len = length(data)
     for i = 1:len
-        tmp = linear_interpolation(cell2mat(data(i)),10);
+        tmp = linearInterpolation(cell2mat(data(i)),10);
         [tmp_m, tmp_n] = size(tmp);
         data(i) = mat2cell(tmp,tmp_m,tmp_n);
     end

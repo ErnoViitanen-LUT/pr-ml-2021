@@ -1,5 +1,11 @@
 function model = simpleGridProbability(simple,class)
-    
+% simpleGridProbability(simple,class) - create probabilities based on
+% simple grid and class
+% INPUT:
+%     simple - simple grid data matrix
+%     class - classification
+% OUTPUT:
+%     model - simple model 
     
     model.startDistributions = getDistributions(simple,1,class);
     model.endDistributions = getDistributions(simple,2,class);

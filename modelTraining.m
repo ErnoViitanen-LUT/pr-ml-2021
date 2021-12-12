@@ -1,6 +1,6 @@
 % File used for training the models using various parameters
-loadstrokes;
-data = datanormalization2d(data);
+loadTrainingStrokes;
+data = normalize2D(data);
 class = class-1;
 
 NUMBER_OF_ATTEMPTS = 5; %how many times we will test the model with the same parameters 
@@ -28,16 +28,16 @@ for dim = dims
             disp(s)
             
             % Interpolating model
-            [model, ~, ~, acc, acc_total] = interpolating_model(data,class,training_ratio,dim,300,seed,true);
+            [model, ~, ~, acc, acc_total] = interpolatingModel(data,class,training_ratio,dim,300,seed,true);
             i_s = strcat(s_int_m,s);
             model_benchmark.(i_s) = model;
             model_benchmark.(i_s).acc = acc;
             model_benchmark.(i_s).acc_total = acc_total;
             intpol_acc_benchmark(attempt,:) = acc;
             
-            % Spliting model
+            % Splitting model
             
-            [model, ~, ~, acc, acc_total] = spliting_model(data,class,2,training_ratio,dim,seed,false);
+            [model, ~, ~, acc, acc_total] = splittingModel(data,class,2,training_ratio,dim,seed,false);
             s_s = strcat(s_spl_m,s);
             model_benchmark.(s_s) = model;
             model_benchmark.(s_s).acc = acc;
@@ -46,7 +46,7 @@ for dim = dims
             
             % Augmented model
             
-            [model, ~, ~, acc, acc_total] = augmented_model(data,class,training_ratio,dim,seed,false);
+            [model, ~, ~, acc, acc_total] = augmentedModel(data,class,training_ratio,dim,seed,false);
             a_s = strcat(s_aug_m,s);
             model_benchmark.(a_s) = model;
             model_benchmark.(a_s).acc = acc;

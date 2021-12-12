@@ -1,5 +1,5 @@
-function interpolated_data = linear_interpolation(data,N)
-% LINEAR_INTERPOLATION(data,N)
+function interpolated_data = linearInterpolation(data,N)
+% linearInterpolation(data,N)
 % INPUT:
 %     data - matrix of points to interpolate
 %     N - number of total points in the interpolated output

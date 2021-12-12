@@ -1,5 +1,5 @@
-function [model, C_sum, y_test, acc, acc_total] = spliting_model(data,class,k,train_size,dim,seed, DEBUG)
-% SPLITING_MODEL(data,class,train_size,dim,intpol_num,seed,DEBUG) -
+function [model, C_sum, y_test, acc, acc_total] = splittingModel(data,class,k,train_size,dim,seed, DEBUG)
+% splittingModel(data,class,train_size,dim,intpol_num,seed,DEBUG) -
 % enhanced augmented model which splits the sample hyperspace into kxk
 % subspaces
 % INPUT:
@@ -64,12 +64,12 @@ y_total = zeros(k^2, test_data_size);
 model= struct;
 p_str = 'part_';
 for i = 1:data_size
-    divided_data(:,:,i) = hyperplane_division(data(i),k);
+    divided_data(:,:,i) = hyperplaneDivision(data(i),k);
 end
 seed = rng;
 for i = 1:k
     for j = 1:k
-        [m, C, y, acc,acc_total]=augmented_model(divided_data(i,j,:),class, train_size,dim, seed);
+        [m, C, y, acc,acc_total]=augmentedModel(divided_data(i,j,:),class, train_size,dim, seed);
         part_str = strcat(p_str,num2str(2*(i-1)+j));
         model.(part_str).m = m;
         model.(part_str).acc = acc;

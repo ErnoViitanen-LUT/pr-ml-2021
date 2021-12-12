@@ -20,3 +20,6 @@ else
     clear -regexp ^(?!class|data$)[^.]+$
     save strokes class data;
 end
+
+
+  

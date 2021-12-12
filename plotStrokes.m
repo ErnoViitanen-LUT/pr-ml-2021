@@ -77,7 +77,7 @@ function plot_digit(data,sampleIndex,plotDigit)
 end
 
 function [pos] = plotrects(sample)
-    % plot rectangles for start and end samples 
+% plot samples and highlight rectangles for start and end samples 
     numPointsInSample = 3;
     sampleStart=sample(1:numPointsInSample,:);
     sampleSize = size(sample,1);
@@ -97,6 +97,7 @@ function [pos] = plotrects(sample)
 end
 
 function foundInPos = plotOneRect(sample,pos,color)
+% Hightlight rect position with color
     foundInPos = 0;
     if pos == 1 %bottomleft
         x=[0,1/3,1/3,0];

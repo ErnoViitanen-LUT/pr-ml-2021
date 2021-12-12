@@ -1,13 +1,18 @@
-% runSimpleGridTest
-% Test simple grid model with testing data
+% runKnnTest
+% Test kNN model with testing data
 
-loadTrainingStrokes;
-ndata = normalize2D(data);
+if ~exist('knnModel','var')
+    error("No model for kNN model testing found")
+end
 
-for times=1:1
+%loadTrainingStrokes;
+%ndata = normalize2D(data);
+%pTrain = 2/3;
+%[~,~,testData,testClass] = splitForTrainAndTest(ndata,class,pTrain);
+
+for K=2:6
         
-    [~,predictedClass] = simpleGridPrediction(testData,simpleGridModel);
-    predictedClass = predictedClass(1,:); % get the sum with empty
+    predictedClass = knnPredict(testData,knnModel,K);
     
     data_size = size(testData,2);
     err = sum(testClass ~= predictedClass); % we compare our results with the expected values
@@ -19,7 +24,7 @@ for times=1:1
     end
     confusion = confusionmat(testClass,predictedClass);
     cm = confusionchart(confusion);
-    cm.Title = "Start + End + Empty";
+    cm.Title = "Voting";
     drawnow;
 
 

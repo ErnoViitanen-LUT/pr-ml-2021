@@ -1,5 +1,5 @@
-function [model, C, y_test, acc, acc_total] = augmented_model(data,class,train_size,dim, seed, DEBUG)
-% AUGMENTED_MODEL(data, class, train_size, dim, seed) - basic Bayesian
+function [model, C, y_test, acc, acc_total] = augmentedModel(data,class,train_size,dim, seed, DEBUG)
+% augmentedModel(data, class, train_size, dim, seed) - basic Bayesian
 % model using only the means of each sample
 % INPUT:
 %     data - cell row or column vector
@@ -62,7 +62,7 @@ function [model, C, y_test, acc, acc_total] = augmented_model(data,class,train_s
         N = length(num_dat); 
         N_train = round(N*train_size);
         N_test = N-N_train;
-        [x_train, x_test, seed]=test_train_split(num_dat,train_size,seed); %we split our data into training and testing
+        [x_train, x_test, seed]=testTrainSplit(num_dat,train_size,seed); %we split our data into training and testing
         % Training data %
         if(DEBUG==true)
             figure

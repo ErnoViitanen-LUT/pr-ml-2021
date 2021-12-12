@@ -1,5 +1,14 @@
 
-function [summedEmptyStartEnd,predictedClass] = simpleGridPrediction(test,model)
+function [summedEmptyStartEnd,predictedClass] = simpleGridPredict(test,model)
+% simpleGridPredict(test,model) - create prediction based on
+% simple grid model
+% INPUT:
+%     test - data to be classified
+%     model - simple grid model
+% OUTPUT:
+%     summedEmptyStartEnd - probability matrix 
+%     predictedClass - predicted classes for each probability matrix
+
     [M,N] = size(test);
     predictedClass = zeros(5,N);
     if M ~= 1 % we are predicting only one stroke
@@ -31,7 +40,6 @@ function [summedEmptyStartEnd,predictedClass] = simpleGridPrediction(test,model)
         
         sumEmptyProbability = sum(emptyProbability,2);
         sumProbability = [(model.startProbabilities(strokeStart,:) + model.endProbabilities(strokeEnd,:)) / 2]';
-        %sumEmptyProbability + 
 
         sortedSumProbability = sortByColumn([sumProbability [1:10]'],1)';
         sortedEmptyProbability = sortByColumn([sumEmptyProbability [1:10]'],1)';
@@ -46,8 +54,7 @@ function [summedEmptyStartEnd,predictedClass] = simpleGridPrediction(test,model)
         predictedClass(5,i) = sortedEndProbability(2,1);
 
     end
-end
-    
+end    
 
 function sorted = sortByColumn(x,col)
     [~,idx] = sort(x(:,col),'descend'); % sort by distance in ascending order

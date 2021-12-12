@@ -1,5 +1,5 @@
-function[x_train, x_test, seed]=test_train_split(data,train_size, seed)
-    % TEST_TRAIN_SPLIT(data,train_size,seed) Function divides a dataset of one class into
+function[x_train, x_test, seed]=testTrainSplit(data,train_size, seed)
+    % testTrainSplit(data,train_size,seed) Function divides a dataset of one class into
     % training set and testing set using random permutation from a given
     % seed, if there is no seed in function input new seed is created
     % INPUT:

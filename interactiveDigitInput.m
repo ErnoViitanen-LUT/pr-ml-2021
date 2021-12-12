@@ -1,7 +1,7 @@
 function points = interactiveDigitInput
-    % Window for user to draw digit
-    % Reference project
-    % https://se.mathworks.com/matlabcentral/fileexchange/47940-digit-recognizer-zip
+% Window for user to draw digit
+% Reference project
+% https://se.mathworks.com/matlabcentral/fileexchange/47940-digit-recognizer-zip
     
     minPointDistance = 0.0000005;
 

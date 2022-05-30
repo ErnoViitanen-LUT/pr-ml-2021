@@ -1,5 +1,7 @@
 # Pattern Recognition and Machine Learning  
 
+[Demo video of interactive digit classification](https://www.youtube.com/watch?v=6z7kcFm0LkA)
+
 ## Digit classification  
 
 `digit_classify` - digit classification entry point  
